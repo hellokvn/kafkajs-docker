@@ -2,7 +2,7 @@ const { Kafka } = require('kafkajs');
 
 const kafka = new Kafka({
   clientId: 'app-consumer',
-  brokers: ['kafka:29092'],
+  brokers: ['kafka:9092'],
 });
 
 const consumer = kafka.consumer({ groupId: 'date-group' });
