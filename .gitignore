@@ -1,0 +1,4 @@
+git remote add origin https://github.com/oyoukio/kafkajs-docker.gitgit push origin master.idea
+/node_modules
+.DS_Store
+*.log

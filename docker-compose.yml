@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  zookeeper:
+    image: bitnami/zookeeper
+    ports:
+      - 2181:2181
+    volumes:
+      - ./data/zookeeper:/bitnami/zookeeper
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - kafka-app
+
+  kafka:
+    image: bitnami/kafka
+    ports:
+      - 9092:9092
+      - 29092:29092
+    volumes:
+      - ./data/kafka:/bitnami/kafka
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+    networks:
+      - kafka-app
+    depends_on:
+      - zookeeper
+
+  producer:
+    container_name: producer
+    build:
+      context: .
+      dockerfile: Dockerfile-producer
+    networks:
+      - kafka-app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      kafka:
+        condition: service_started
+
+  consumer:
+    container_name: consumer
+    build:
+      context: .
+      dockerfile: Dockerfile-consumer
+    networks:
+      - kafka-app
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    depends_on:
+      producer:
+        condition: service_started
+
+networks:
+  kafka-app:
+    driver: bridge
