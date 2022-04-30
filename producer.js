@@ -18,11 +18,11 @@ async function main() {
   await producer.connect();
 
   setInterval(() => {
-    console.log('SEND', `${host} ${i}`);
+    console.log('SEND', i);
 
     producer.send({
-      topic: 'current-date',
-      messages: [{ value: `${host} ${i}` }],
+      topic: 'test-topc',
+      messages: [{ value: `${i}` }],
     });
 
     i++;

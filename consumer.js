@@ -1,7 +1,5 @@
 const { Kafka } = require('kafkajs');
 
-const host = process.env.IS_DOCKER ? 'kafka' : 'localhost';
-
 const kafka = new Kafka({
   clientId: 'app-consumer',
   brokers: ['kafka:29092'],
@@ -17,7 +15,7 @@ process.on('SIGINT', function () {
 
 async function main() {
   await consumer.connect();
-  await consumer.subscribe({ topic: 'current-date', fromBeginning: false });
+  await consumer.subscribe({ topic: 'test-topc', fromBeginning: false });
 
   await consumer.run({
     async eachMessage({ topic, partition, message }) {
